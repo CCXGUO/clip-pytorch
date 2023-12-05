@@ -1,1 +1,1 @@
-使用到的预训练权重
+pre-trained weights

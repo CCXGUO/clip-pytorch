@@ -1,10 +1,16 @@
-
+#用于评估图像和文本之间的匹配性能
 import numpy as np
 
 def itm_eval(scores_i2t, scores_t2i, txt2img, img2txt):
-    # Images->Text
+    #scores_i2t: 一个数组，其中包含图像到文本匹配得分。
+    #scores_t2i: 一个数组，其中包含文本到图像匹配得分。
+    #txt2img: 一个数组或列表，表示正确的文本到图像的匹配索引。
+    #img2txt: 一个数组或列表，表示正确的图像到文本的匹配索引。
+    # Images->Text 从图像到文本的匹配
+
     ranks = np.zeros(scores_i2t.shape[0])
     for index, score in enumerate(scores_i2t):
+        #对当前的 score 数组进行降序排序，并获取排序后的索引。
         inds = np.argsort(score)[::-1]
         # Score
         rank = 1e20

@@ -5,10 +5,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-#--------------------------------------#
-#   Gelu激活函数的实现
-#   利用近似的数学公式
-#--------------------------------------#
+
+#   Gaussian Error Linear Unit (GELU)激活函数。
+#   forward方法实现了GELU函数的计算，使用了一个近似的公式来计算GELU。
 class GELU(nn.Module):
     def __init__(self):
         super(GELU, self).__init__()

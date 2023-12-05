@@ -11,9 +11,21 @@ from pkg_resources import packaging
 
 import torch
 
+
+#@lru_cache()
+#def default_bpe():
+    #return os.path.join(os.path.dirname(os.path.abspath(__file__)), "../model_data/bpe_simple_vocab_16e6.txt.gz")
+
 @lru_cache()
 def default_bpe():
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "../model_data/bpe_simple_vocab_16e6.txt.gz")
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bpe_simple_vocab_16e6.txt.gz")
+    if not os.path.exists(file_path):
+        print("文件未找到，请确保文件路径和文件名是正确的。")
+        print("尝试访问的文件路径：", file_path)
+    return file_path
+
+file_path = default_bpe()
+print(file_path)
 
 
 @lru_cache()

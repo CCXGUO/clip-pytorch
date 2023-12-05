@@ -16,8 +16,10 @@ if __name__ == "__main__":
     #   datasets_val_json_path  验证样本的标签
     #   batch_size              验证的batch_size
     #------------------------------------------------------#
-    datasets_path               = "datasets/"
-    datasets_val_json_path      = "datasets/cn_val.json"
+    #datasets_path               = "datasets/"
+    #datasets_val_json_path      = "datasets/en_val.json"
+    datasets_path = "/home/luno/dev/clip-asse/humanpresence"
+    datasets_val_json_path = "/home/luno/dev/clip-asse/humanpresence/caption.json"
     batch_size                  = 64
     num_workers                 = 4
 
@@ -27,12 +29,13 @@ if __name__ == "__main__":
     # 计算样本数
     val_lines   = json.load(open(datasets_val_json_path, mode = 'r', encoding = 'utf-8'))
     num_val     = len(val_lines)
-    # 创建数据集
+    # 创建验证数据集
     val_dataset = ClipDataset([model.config['input_resolution'], model.config['input_resolution']], val_lines, datasets_path, random = False)
     gen_val     = DataLoader(val_dataset, shuffle=False, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
                             drop_last=False, collate_fn=dataset_collate, sampler=None)
 
     # 获得视觉特征和文本特征
+    # 避免计算梯度，因为这里只是在进行评估
     i_features = []
     t_features = []
     for iteration, batch in tqdm(enumerate(gen_val)):
@@ -52,11 +55,15 @@ if __name__ == "__main__":
             _, texts_feature = model.detect_image_for_eval(images=None, texts=text)
             t_features.append(texts_feature)
 
+    #所有提取的图像和文本特征被合并为两个大的张量，并且它们被标准化
+
     i_features = torch.cat(i_features, 0)
     t_features = torch.cat(t_features, 0)
     
     i_features  = i_features / i_features.norm(dim=-1, keepdim=True)
     t_features  = t_features / t_features.norm(dim=-1, keepdim=True)
+
+    #计算图像特征和文本特征之间的点积，来获取图像和文本之间的相似度分数
 
     logits_per_image    = i_features @ t_features.t()
     logits_per_text     = logits_per_image.t()
